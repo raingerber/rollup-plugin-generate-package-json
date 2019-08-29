@@ -75,6 +75,18 @@ generatePackageJson({
 })
 ```
 
+It can also be a function, which receives the contents of the `package.json` input file.
+
+```js
+generatePackageJson({
+  baseContents: (pkg) => {
+    return {
+      name: pkg.name
+    }
+  }
+})
+```
+
 **additionalDependencies**
 
 Set additional dependencies which were not used in the bundle, but are used by the app.

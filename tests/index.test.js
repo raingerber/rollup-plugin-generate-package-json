@@ -129,7 +129,7 @@ describe('Generate package.json file', () => {
     })
   })
 
-  test('generate file with base contents', () => {
+  test('generate file with base contents object', () => {
     const basePackageJson = {
       name: 'my-package',
       dependencies: {},
@@ -149,7 +149,7 @@ describe('Generate package.json file', () => {
     })
   })
 
-  test('generate file with base contents and dependencies', () => {
+  test('generate file with base contents object and dependencies', () => {
     const basePackageJson = {
       name: 'my-package',
       dependencies: {},
@@ -170,6 +170,38 @@ describe('Generate package.json file', () => {
       },
       private: true
     })
+  })
+
+  test('generate file with base contents function', () => {
+    const getBasePackageJson = jest.fn().mockImplementation((pkg) => {
+      expect(pkg).toEqual({
+        version: '1.0',
+        dependencies: {
+          koa: '2.0',
+          react: '16.0'
+        }
+      })
+      return {
+        ...pkg,
+        version: '2.0'
+      }
+    })
+    const generate = generatePackageJson({
+      inputFolder: 'tests/fixtures',
+      outputFolder: 'tests/fixtures/output',
+      baseContents: getBasePackageJson
+    })
+
+    generate.generateBundle({}, bundleDetailsWithImports)
+
+    expect(readPkg.sync({ cwd: 'tests/fixtures/output', normalize: false })).toEqual({
+      version: '2.0',
+      dependencies: {
+        koa: '2.0',
+        react: '16.0'
+      }
+    })
+    expect(getBasePackageJson).toHaveBeenCalledTimes(1)
   })
 
   test('generate file with additional dependencies', () => {

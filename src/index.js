@@ -31,7 +31,7 @@ function normalizeImportModules(imports) {
 }
 
 export default function (options = {}) {
-  const baseContents = options.baseContents || {}
+  let baseContents = options.baseContents || {}
   const additionalDependencies = options.additionalDependencies || []
 
   return {
@@ -58,11 +58,18 @@ export default function (options = {}) {
         }
       })
 
+      if (typeof baseContents === 'function') {
+        baseContents = baseContents(inputFile) || {}
+      }
+
       const generatedContents = Object.assign(
         {},
         baseContents,
         Object.keys(generatedDependencies).length && {
-          dependencies: generatedDependencies
+          dependencies: {
+            ...baseContents.dependencies,
+            ...generatedDependencies
+          }
         }
       )
 
